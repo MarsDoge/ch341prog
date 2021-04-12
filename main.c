@@ -211,6 +211,24 @@ int main(int argc, char* argv[])
         fclose(fp);
     }
     if (op == 'w') {
+#if 1
+	uint8_t timeout = 0;
+        ret = ch341EraseChip();
+        if (ret < 0) goto out;
+        do {
+            sleep(1);
+            ret = ch341ReadStatus();
+            if (ret < 0) goto out;
+            printf(".");
+            fflush(stdout);
+            timeout++;
+            if (timeout == 100) break;
+        } while(ret != 0);
+        if (timeout == 100)
+            fprintf(stderr, "Chip erase timeout.\n");
+        else
+            printf("Chip erase done!\n");
+#endif
         fp = fopen(filename, "rb");
         if (!fp) {
             fprintf(stderr, "Couldn't open file %s for reading.\n", filename);
@@ -226,7 +244,8 @@ int main(int argc, char* argv[])
         cap = ret;
         fprintf(stderr, "File Size is [%d]\n", ret);
         ret = ch341SpiWrite(buf, offset, ret);
-        if (ret == 0) {
+       // if (ret == 0) {
+        if (0) {
             printf("\nWrite ok! Try to verify... ");
             FILE *test_file;
             char *test_filename;

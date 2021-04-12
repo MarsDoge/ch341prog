@@ -571,7 +571,12 @@ int32_t ch341SpiWrite(uint8_t *buf, uint32_t add, uint32_t len)
                 fprintf(stderr, "User hit Ctrl+C, writing unfinished.\n");
             break;
         }
+	if (!(add % (1024*16))) { //16K Print .
+          printf(".");
+          fflush(stdout);
+	}
     }
+        printf("\n");
     libusb_free_transfer(xferBulkIn);
     libusb_free_transfer(xferBulkOut);
 
